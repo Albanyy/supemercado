@@ -8,7 +8,7 @@ import com.example.supermercado.entity.Venta;
 import lombok.Data;
 
 @Data 
-public class DetalleResponseDTO {
+public class DetalleVentaResponseDTO {
 
     private Long id;
 
