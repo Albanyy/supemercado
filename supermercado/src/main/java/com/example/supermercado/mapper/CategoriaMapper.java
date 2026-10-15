@@ -5,8 +5,10 @@ import com.example.supermercado.dto.Categoria.CategoriaRequestDTO;
 import com.example.supermercado.dto.Categoria.CategoriaResponseDTO;
 import com.example.supermercado.entity.Categoria;
 
-/*Convierte a Categoria a CategoriaResponseDTO */
+
 public class CategoriaMapper {
+    
+    /*Convierte a Categoria a CategoriaResponseDTO */
     public static CategoriaResponseDTO toResponseDTO(Categoria categoria){
         if (categoria == null) {
             return null;

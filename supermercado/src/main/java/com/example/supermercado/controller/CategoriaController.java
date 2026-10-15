@@ -30,8 +30,8 @@ public class CategoriaController {
     /*Crea una categoria */
 
     @PostMapping 
-    public ResponseEntity<CategoriaResponseDTO> crearCategoria(@RequestBody CategoriaRequestDTO requestDTO) {
-        CategoriaResponseDTO response = categoriaService.crearCategoria(requestDTO);
+    public ResponseEntity<CategoriaResponseDTO> crearCategoria(@RequestBody CategoriaRequestDTO request) {
+        CategoriaResponseDTO response = categoriaService.crearCategoria(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
