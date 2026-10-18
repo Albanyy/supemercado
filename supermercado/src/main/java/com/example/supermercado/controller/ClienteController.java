@@ -7,6 +7,7 @@ import com.example.supermercado.dto.Cliente.ClienteRequestDTO;
 import com.example.supermercado.dto.Cliente.ClienteResponseDTO;
 import com.example.supermercado.service.ClienteService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
@@ -22,7 +23,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @RequiredArgsConstructor 
-@RequestMapping ("/cliente")
+@RequestMapping ("/api/cliente")
 public class ClienteController {
 
     private final ClienteService clienteService;
@@ -30,7 +31,7 @@ public class ClienteController {
     /*Crea una cliente */
 
     @PostMapping
-    public ResponseEntity<ClienteResponseDTO> crearCliente(@RequestBody ClienteRequestDTO request) {
+    public ResponseEntity<ClienteResponseDTO> crearCliente(@Valid @RequestBody ClienteRequestDTO request) {
         ClienteResponseDTO response = clienteService.crearCliente(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }    

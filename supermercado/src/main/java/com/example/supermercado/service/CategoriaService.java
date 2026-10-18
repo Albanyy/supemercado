@@ -76,12 +76,5 @@ public class CategoriaService {
         categoriaRepository.deleteById(categoriaId);
     }
 
-    /*Elimina todas las categorias */
-
-    public void deleteAllCategorias() {
-        categoriaRepository.deleteAll();
-    }
-
-    
 
 }

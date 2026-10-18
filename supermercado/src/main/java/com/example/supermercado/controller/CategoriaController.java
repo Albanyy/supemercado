@@ -18,11 +18,12 @@ import com.example.supermercado.dto.Categoria.CategoriaRequestDTO;
 import com.example.supermercado.dto.Categoria.CategoriaResponseDTO;
 import com.example.supermercado.service.CategoriaService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController 
 @RequiredArgsConstructor 
-@RequestMapping("/categoria") 
+@RequestMapping("/api/categoria") 
 public class CategoriaController {
     
     private final CategoriaService categoriaService;
@@ -30,7 +31,7 @@ public class CategoriaController {
     /*Crea una categoria */
 
     @PostMapping 
-    public ResponseEntity<CategoriaResponseDTO> crearCategoria(@RequestBody CategoriaRequestDTO request) {
+    public ResponseEntity<CategoriaResponseDTO> crearCategoria(@Valid @RequestBody CategoriaRequestDTO request) {
         CategoriaResponseDTO response = categoriaService.crearCategoria(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -67,12 +68,5 @@ public class CategoriaController {
         return ResponseEntity.ok("Se elimino correctamente");
     }
 
-    /*Elimina todas la categorias */
-
-    @DeleteMapping 
-    public ResponseEntity<String> deleteAllCategorias(){
-        categoriaService.deleteAllCategorias();
-        return ResponseEntity.ok("Se eliminaron todas las categorias");
-    }
 
 }

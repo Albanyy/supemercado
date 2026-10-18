@@ -24,7 +24,7 @@ public class ClienteService {
     /*Crea cliente */
 
     public ClienteResponseDTO crearCliente(ClienteRequestDTO request){
-        Optional<Cliente> clienteFound = clienteRepository.findFirstByNombre(request.getNombre());
+        Optional<Cliente> clienteFound = clienteRepository.findFirstByDocumento(request.getDocumento());
 
         if (clienteFound.isPresent()) {
             throw new DuplicateResourceException("Ya existe");
@@ -50,6 +50,11 @@ public class ClienteService {
 
     public ClienteResponseDTO updateCliente(Long id, ClienteRequestDTO request) {
         Cliente clienteFound = clienteRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("No existe"));
+        Optional<Cliente> clienteDocumento = clienteRepository.findFirstByDocumento(request.getDocumento());
+
+        if (clienteDocumento.isPresent() && !clienteDocumento.get().getId().equals(id)) {
+            throw new DuplicateResourceException("El documento ya existe");
+        }
 
         clienteFound.setNombre(request.getNombre());
         clienteFound.setDocumento(request.getDocumento());
