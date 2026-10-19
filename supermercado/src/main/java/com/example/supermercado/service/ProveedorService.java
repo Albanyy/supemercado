@@ -17,16 +17,16 @@ import com.example.supermercado.repository.ProveedorRepository;
 
 import lombok.RequiredArgsConstructor;
 
-@Service 
-@RequiredArgsConstructor 
-@RequestMapping ("/api/proveedor")
+@Service
+@RequiredArgsConstructor
+@RequestMapping("/api/proveedor")
 public class ProveedorService {
-    
+
     private final ProveedorRepository proveedorRepository;
 
-    /*Crea un Proveedor */
+    /* Crea un Proveedor */
 
-    public ProveedorResponseDTO crearProveedor(ProveedorRequestDTO request){
+    public ProveedorResponseDTO crearProveedor(ProveedorRequestDTO request) {
         Optional<Proveedor> proveedorFound = proveedorRepository.findFirstByNombre(request.getNombre());
 
         if (proveedorFound.isPresent()) {
@@ -34,26 +34,28 @@ public class ProveedorService {
         }
 
         Proveedor proveedor = ProveedorMapper.toEntity(request);
-            
+
         Proveedor proveedorGuardado = proveedorRepository.save(proveedor);
 
         return ProveedorMapper.toResponseDTO(proveedorGuardado);
 
     }
 
-    /*Trae todos los proveedores */
+    /* Trae todos los proveedores */
 
     public List<ProveedorResponseDTO> getAllProveedores() {
 
-        return proveedorRepository.findAll().stream().map(proveedor -> ProveedorMapper.toResponseDTO(proveedor)).collect(Collectors.toList());
+        return proveedorRepository.findAll().stream().map(proveedor -> ProveedorMapper.toResponseDTO(proveedor))
+                .collect(Collectors.toList());
 
     }
 
-    /*Actualiza a proveedor */
+    /* Actualiza a proveedor */
 
-    public ProveedorResponseDTO updateProveedor(Long proveedorId ,ProveedorRequestDTO request){
+    public ProveedorResponseDTO updateProveedor(Long proveedorId, ProveedorRequestDTO request) {
 
-        Proveedor proveedorFound = proveedorRepository.findById(proveedorId).orElseThrow(() -> new ResourceNotFoundException("No existe"));
+        Proveedor proveedorFound = proveedorRepository.findById(proveedorId)
+                .orElseThrow(() -> new ResourceNotFoundException("No existe"));
 
         proveedorFound.setNombre(request.getNombre());
         proveedorFound.setTelefono(request.getTelefono());
@@ -65,17 +67,18 @@ public class ProveedorService {
 
     }
 
-    /*Trae a un proveedor por id */
+    /* Trae a un proveedor por id */
 
     public ProveedorResponseDTO getProveedor(Long proveedorId) {
-        Proveedor proveedorFound = proveedorRepository.findById(proveedorId).orElseThrow(() -> new ResourceNotFoundException("No existe"));
+        Proveedor proveedorFound = proveedorRepository.findById(proveedorId)
+                .orElseThrow(() -> new ResourceNotFoundException("No existe"));
 
         return ProveedorMapper.toResponseDTO(proveedorFound);
     }
 
-    /*Elimina a un proveedor */
+    /* Elimina a un proveedor */
 
-    public void deleteProveedor(Long proveedorId){
+    public void deleteProveedor(Long proveedorId) {
         if (!proveedorRepository.existsById(proveedorId)) {
             throw new ResourceNotFoundException("No existe");
         }

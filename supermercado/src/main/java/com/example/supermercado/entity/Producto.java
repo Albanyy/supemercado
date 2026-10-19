@@ -22,7 +22,6 @@ import lombok.Setter;
 @Entity 
 @Table (name = "Producto")
 public class Producto {
-    
 
     @Id
     @GeneratedValue (strategy = GenerationType.IDENTITY)
