@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController 
 @RequiredArgsConstructor 
-@RequestMapping ("/api/Proveedor")
+@RequestMapping ("/api/proveedor")
 public class ProveedorController {
     private final ProveedorService proveedorService;
 

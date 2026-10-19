@@ -43,10 +43,10 @@ public class ProductoMapper {
 
         Producto producto = new Producto();
 
-        producto.setNombre(producto.getNombre());
-        producto.setPrecio(producto.getPrecio());
-        producto.setStock(producto.getStock());
-        producto.setCodigoBarras(producto.getCodigoBarras());
+        producto.setNombre(request.getNombre());
+        producto.setPrecio(request.getPrecio());
+        producto.setStock(request.getStock());
+        producto.setCodigoBarras(request.getCodigoBarras());
 
         return producto;
 
