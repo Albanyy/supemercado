@@ -34,7 +34,7 @@ public class GlobalExceptionHandler {
                 return crearRespuesta(HttpStatus.BAD_REQUEST, ex.getMessage());
         }
 
-        /* Conflictos de duplicados */
+        /* Conflictos de negocio como duplicados o recursos relacionados */
         @ExceptionHandler({ RelatedResourceException.class, IllegalStateException.class })
         public ResponseEntity<Map<String, Object>> manejarConflicto(RuntimeException ex) {
                 return crearRespuesta(HttpStatus.CONFLICT, ex.getMessage());
