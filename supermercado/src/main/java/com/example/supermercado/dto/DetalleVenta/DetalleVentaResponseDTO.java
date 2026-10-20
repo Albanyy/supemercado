@@ -18,8 +18,10 @@ public class DetalleVentaResponseDTO {
 
     private  BigDecimal subTotal;
 
-    private Venta venta;
+    private Long ventaId;
 
-    private Producto producto;
+    private Long productoId;
+    
+    private String productoNombre;
 
 }

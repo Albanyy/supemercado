@@ -1,23 +1,19 @@
 package com.example.supermercado.dto.DetalleVenta;
 
-import java.math.BigDecimal;
 
-import com.example.supermercado.entity.Producto;
-import com.example.supermercado.entity.Venta;
 
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data 
 public class DetalleVentaRequestDTO {
     
+    @NotNull (message = "La cantidad es obligatoria")
+    @Min(value = 1, message = "La cantidad debe ser mayor a 0")
     private Integer cantidad;
 
-    private BigDecimal precioUnitario;
-
-    private  BigDecimal subTotal;
-
-    private Venta venta;
-
-    private Producto producto;
+    @NotNull (message = "El ID del producto es obligatorio")
+    private Long productoId;
 
 }

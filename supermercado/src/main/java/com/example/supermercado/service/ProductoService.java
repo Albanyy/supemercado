@@ -69,10 +69,9 @@ public class ProductoService {
 
     public ProductoResponseDTO updateProducto(Long productoId, ProductoRequestDTO request) {
 
-        Optional<Producto> codigoEncontrado = productoRepository.findFirstByCodigoBarras(request.getCodigoBarras());
+        Optional<Producto> codigoFound = productoRepository.findFirstByCodigoBarras(request.getCodigoBarras());
 
-        if (codigoEncontrado.isPresent()
-                && !codigoEncontrado.get().getId().equals(productoId)) {
+        if (codigoFound.isPresent()&& !codigoFound.get().getId().equals(productoId)) {
             throw new DuplicateResourceException(
                     "Ya existe un producto con ese código de barras");
         }
@@ -93,9 +92,9 @@ public class ProductoService {
         productoFound.setCategoria(categoriaFound);
         productoFound.setProveedor(proveedorFound);
 
-        Producto productoGuardado = productoRepository.save(productoFound);
+        Producto productoActualizado = productoRepository.save(productoFound);
 
-        return ProductoMapper.toResponseDTO(productoGuardado);
+        return ProductoMapper.toResponseDTO(productoActualizado);
     }
 
     /* Trae un producto por id */
@@ -130,9 +129,7 @@ public class ProductoService {
 
     public List<ProductoResponseDTO> getProductoStock(Integer stock) {
 
-        return productoRepository.findByStockLessThanEqual(stock).stream()
-                .map(producto -> ProductoMapper.toResponseDTO(producto))
-                .collect(Collectors.toList());
+        return productoRepository.findByStockLessThanEqual(stock).stream().map(producto -> ProductoMapper.toResponseDTO(producto)).collect(Collectors.toList());
 
     }
 
