@@ -2,7 +2,6 @@ package com.example.supermercado.service;
 
 import lombok.RequiredArgsConstructor;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -11,6 +10,8 @@ import org.springframework.stereotype.Service;
 import com.example.supermercado.dto.Categoria.CategoriaRequestDTO;
 import com.example.supermercado.dto.Categoria.CategoriaResponseDTO;
 import com.example.supermercado.entity.Categoria;
+import com.example.supermercado.excepciones.RelatedResourceException;
+import com.example.supermercado.excepciones.ResourceNotFoundException;
 import com.example.supermercado.mapper.CategoriaMapper;
 import com.example.supermercado.repository.CategoriaRepository;
 import com.example.supermercado.repository.ProductoRepository;
@@ -50,7 +51,7 @@ public class CategoriaService {
 
     public CategoriaResponseDTO updateCategoria(Long id, CategoriaRequestDTO request) {
         Categoria categoriaFound = categoriaRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("No existe la categoría"));
+                .orElseThrow(() -> new ResourceNotFoundException("No existe la categoría"));
 
         categoriaFound.setNombre(request.getNombre());
         categoriaFound.setDescripcion(request.getDescripcion());
@@ -64,7 +65,7 @@ public class CategoriaService {
 
     public CategoriaResponseDTO getCategoria(Long id) {
         Categoria categoriaFound = categoriaRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("No existe la categoría"));
+                .orElseThrow(() -> new ResourceNotFoundException("No existe la categoría"));
 
         return CategoriaMapper.toResponseDTO(categoriaFound);
     }
@@ -73,11 +74,11 @@ public class CategoriaService {
 
     public void deleteCategoria(Long categoriaId) {
         if (!categoriaRepository.existsById(categoriaId)) {
-            throw new NoSuchElementException("No existe la categoría");
+            throw new ResourceNotFoundException("No existe la categoría");
         }
 
         if (productoRepository.existsByCategoriaId(categoriaId)) {
-            throw new IllegalStateException("No se puede eliminar la categoría porque tiene productos relacionados");
+            throw new RelatedResourceException("No se puede eliminar la categoría porque tiene productos relacionados");
         }
 
         categoriaRepository.deleteById(categoriaId);

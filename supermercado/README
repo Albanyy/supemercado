@@ -1,0 +1,84 @@
+
+Como ejecutar: ejecutar en el puerto 8080
+
+Endpoints
+
+
+Cliente:
+
+
+POST http://localhost:8080/api/cliente crea a un cliente
+
+GET http://localhost:8080/api/cliente trae a todos los clientes
+
+PUT http://localhost:8080/api/cliente/{id} actualiza a un cliente por su id
+
+GET http://localhost:8080/api/cliente/{id} trae a un cliente por su id
+
+GET http://localhost:8080/api/cliente/{documento} trae un cliente por su documento
+
+DELETE http://localhost:8080/api/cliente/{id} elimina un cliente por su id
+
+
+Categoria: 
+
+
+POST http://localhost:8080/api/categoria crea a una categoria
+
+GET http://localhost:8080/api/categoria trae a todas las categorias
+
+PUT http://localhost:8080/api/categoria/{id} actualiza una categoria por su id
+
+DELETE http://localhost:8080/api/categoria/{id} elimina una categoria por su id
+
+
+Producto:
+
+
+POST http://localhost:8080/api/producto crea un producto
+
+GET http://localhost:8080/api/producto trae a todos lo productos
+
+PUT http://localhost:8080/api/producto/{id} actualiza un producto por su id
+
+GET http://localhost:8080/api/producto/{id} trae un producto por su id
+
+GET http://localhost:8080/api/producto/categoria/{categoriaId} lista los productos de una categoria
+
+GET http://localhost:8080/api/producto/nombre/{nombre} trae un producto por el nombre
+
+GET http://localhost:8080/api/producto/stock?stock=10 lista los productos con menor o igual al limite indicado en este caso 10 pero puede ser cualquier numero
+
+DELETE http://localhost:8080/api/producto/{id} elimina un producto por su id
+
+
+Proveedor:
+
+
+POST http://localhost:8080/api/proveedor crea a un proveedor
+
+GET http://localhost:8080/api/proveedor trae a todos los proveedores 
+
+PUT http://localhost:8080/api/proveedor/{id} actualiza a un proveedor por su id
+
+GET http://localhost:8080/api/proveedor/{id} trae a un proveedor por su id
+
+DELETE http://localhost:8080/api/proveedor/{id} elimina a un proveedor por su id
+
+
+Venta:
+
+
+POST http://localhost:8080/api/venta crea una venta
+
+GET http://localhost:8080/api/venta trae a todas las ventas
+
+PUT http://localhost:8080/api/venta/{id} actualiza una venta por su id
+
+GET http://localhost:8080/api/venta/{id} trae una venta por su id
+
+GET http://localhost:8080/api/venta/cliente/{clienteId} trae ventas de un cliente
+
+GET http://localhost:8080/api/venta/cliente/fecha trae ventas entre dos fechas
+
+DELETE http://localhost:8080/api/venta/{id} elimina a una venta por su d

@@ -1,7 +1,6 @@
 package com.example.supermercado.service;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -11,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.example.supermercado.dto.Proveedor.ProveedorRequestDTO;
 import com.example.supermercado.dto.Proveedor.ProveedorResponseDTO;
 import com.example.supermercado.entity.Proveedor;
+import com.example.supermercado.excepciones.RelatedResourceException;
+import com.example.supermercado.excepciones.ResourceNotFoundException;
 import com.example.supermercado.mapper.ProveedorMapper;
 import com.example.supermercado.repository.ProductoRepository;
 import com.example.supermercado.repository.ProveedorRepository;
@@ -56,7 +57,7 @@ public class ProveedorService {
     public ProveedorResponseDTO updateProveedor(Long proveedorId, ProveedorRequestDTO request) {
 
         Proveedor proveedorFound = proveedorRepository.findById(proveedorId)
-                .orElseThrow(() -> new NoSuchElementException("No existe el proveedor"));
+                .orElseThrow(() -> new ResourceNotFoundException("No existe el proveedor"));
 
         proveedorFound.setNombre(request.getNombre());
         proveedorFound.setTelefono(request.getTelefono());
@@ -72,7 +73,7 @@ public class ProveedorService {
 
     public ProveedorResponseDTO getProveedor(Long proveedorId) {
         Proveedor proveedorFound = proveedorRepository.findById(proveedorId)
-                .orElseThrow(() -> new NoSuchElementException("No existe el proveedor"));
+                .orElseThrow(() -> new ResourceNotFoundException("No existe el proveedor"));
 
         return ProveedorMapper.toResponseDTO(proveedorFound);
     }
@@ -81,11 +82,11 @@ public class ProveedorService {
 
     public void deleteProveedor(Long proveedorId) {
         if (!proveedorRepository.existsById(proveedorId)) {
-            throw new NoSuchElementException("No existe proveedor");
+            throw new ResourceNotFoundException("No existe proveedor");
         }
 
         if (productoRepository.existsByProveedorId(proveedorId)) {
-            throw new IllegalStateException("No se puede eliminar el proveedor porque tiene productos relacionados ");
+            throw new RelatedResourceException("No se puede eliminar el proveedor porque tiene productos relacionados");
         }
 
         proveedorRepository.deleteById(proveedorId);

@@ -1,7 +1,6 @@
 package com.example.supermercado.service;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 import java.util.Optional;
@@ -10,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.example.supermercado.dto.Cliente.ClienteRequestDTO;
 import com.example.supermercado.dto.Cliente.ClienteResponseDTO;
 import com.example.supermercado.entity.Cliente;
+import com.example.supermercado.excepciones.ResourceNotFoundException;
 import com.example.supermercado.mapper.ClienteMapper;
 import com.example.supermercado.repository.ClienteRepository;
 
@@ -49,7 +49,7 @@ public class ClienteService {
 
     public ClienteResponseDTO getClienteDocumento(String documento) {
         Cliente clienteFound = clienteRepository.findFirstByDocumento(documento)
-                .orElseThrow(() -> new NoSuchElementException("No existe el cliente"));
+                .orElseThrow(() -> new ResourceNotFoundException("No existe el cliente"));
 
         return ClienteMapper.toResponseDTO(clienteFound);
     }
@@ -58,7 +58,7 @@ public class ClienteService {
 
     public ClienteResponseDTO updateCliente(Long id, ClienteRequestDTO request) {
         Cliente clienteFound = clienteRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("No existe el cliente"));
+                .orElseThrow(() -> new ResourceNotFoundException("No existe el cliente"));
         Optional<Cliente> clienteDocumento = clienteRepository.findFirstByDocumento(request.getDocumento());
 
         if (clienteDocumento.isPresent() && !clienteDocumento.get().getId().equals(id)) {
@@ -78,7 +78,7 @@ public class ClienteService {
 
     public ClienteResponseDTO getCliente(Long id) {
         Cliente clienteFound = clienteRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("No existe el cliente"));
+                .orElseThrow(() -> new ResourceNotFoundException("No existe el cliente"));
 
         return ClienteMapper.toResponseDTO(clienteFound);
     }
@@ -87,7 +87,7 @@ public class ClienteService {
 
     public void deleteCliente(Long id) {
         if (!clienteRepository.existsById(id)) {
-            throw new NoSuchElementException("No existe el cliente");
+            throw new ResourceNotFoundException("No existe el cliente");
         }
 
         clienteRepository.deleteById(id);

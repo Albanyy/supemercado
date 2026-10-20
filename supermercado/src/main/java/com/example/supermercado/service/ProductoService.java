@@ -3,7 +3,6 @@ package com.example.supermercado.service;
 import com.example.supermercado.repository.CategoriaRepository;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -14,6 +13,7 @@ import com.example.supermercado.dto.Producto.ProductoResponseDTO;
 import com.example.supermercado.entity.Categoria;
 import com.example.supermercado.entity.Producto;
 import com.example.supermercado.entity.Proveedor;
+import com.example.supermercado.excepciones.ResourceNotFoundException;
 import com.example.supermercado.mapper.ProductoMapper;
 import com.example.supermercado.repository.ProductoRepository;
 import com.example.supermercado.repository.ProveedorRepository;
@@ -39,10 +39,10 @@ public class ProductoService {
         }
 
         Categoria categoriaFound = categoriaRepository.findById(request.getCategoriaId())
-                .orElseThrow(() -> new NoSuchElementException("No existe la categoría"));
+                .orElseThrow(() -> new ResourceNotFoundException("No existe la categoría"));
 
         Proveedor proveedorFound = proveedorRepository.findById(request.getProveedorId())
-                .orElseThrow(() -> new NoSuchElementException("No existe este proveedor"));
+                .orElseThrow(() -> new ResourceNotFoundException("No existe este proveedor"));
 
         Producto producto = ProductoMapper.toEntity(request);
 
@@ -76,13 +76,13 @@ public class ProductoService {
         }
 
         Producto productoFound = productoRepository.findById(productoId)
-                .orElseThrow(() -> new NoSuchElementException("No existe el producto"));
+                .orElseThrow(() -> new ResourceNotFoundException("No existe el producto"));
 
         Categoria categoriaFound = categoriaRepository.findById(request.getCategoriaId())
-                .orElseThrow(() -> new NoSuchElementException("No existe la categoría"));
+                .orElseThrow(() -> new ResourceNotFoundException("No existe la categoría"));
 
         Proveedor proveedorFound = proveedorRepository.findById(request.getProveedorId())
-                .orElseThrow(() -> new NoSuchElementException("No existe este proveedor"));
+                .orElseThrow(() -> new ResourceNotFoundException("No existe este proveedor"));
 
         productoFound.setNombre(request.getNombre());
         productoFound.setPrecio(request.getPrecio());
@@ -100,7 +100,7 @@ public class ProductoService {
 
     public ProductoResponseDTO getProducto(Long productoId) {
         Producto productoFound = productoRepository.findById(productoId)
-                .orElseThrow(() -> new NoSuchElementException("No existe el producto"));
+                .orElseThrow(() -> new ResourceNotFoundException("No existe el producto"));
 
         return ProductoMapper.toResponseDTO(productoFound);
     }
@@ -109,7 +109,7 @@ public class ProductoService {
 
     public List<ProductoResponseDTO> getProductoCategoria(Long categoriaId) {
         if (!categoriaRepository.existsById(categoriaId)) {
-            throw new NoSuchElementException("No existe la categoría");
+            throw new ResourceNotFoundException("No existe la categoría");
         }
 
         return productoRepository.findByCategoriaId(categoriaId).stream()
@@ -136,7 +136,7 @@ public class ProductoService {
 
     public void deleteProducto(Long productoId) {
         if (!productoRepository.existsById(productoId)) {
-            throw new NoSuchElementException("No existe el producto");
+            throw new ResourceNotFoundException("No existe el producto");
         }
 
         productoRepository.deleteById(productoId);

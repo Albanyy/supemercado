@@ -3,7 +3,6 @@ package com.example.supermercado.service;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -17,6 +16,7 @@ import com.example.supermercado.entity.Cliente;
 import com.example.supermercado.entity.DetalleVenta;
 import com.example.supermercado.entity.Producto;
 import com.example.supermercado.entity.Venta;
+import com.example.supermercado.excepciones.ResourceNotFoundException;
 import com.example.supermercado.mapper.DetalleVentaMapper;
 import com.example.supermercado.mapper.VentaMapper;
 import com.example.supermercado.repository.ClienteRepository;
@@ -48,7 +48,7 @@ public class VentaService {
             }
 
             Producto productoFound = productoRepository.findById(detalleRequest.getProductoId())
-                    .orElseThrow(() -> new NoSuchElementException("No existe el producto"));
+                    .orElseThrow(() -> new ResourceNotFoundException("No existe el producto"));
 
             if (productoFound.getStock() < detalleRequest.getCantidad()) {
                 throw new IllegalArgumentException("No hay suficiente stock");
@@ -88,7 +88,7 @@ public class VentaService {
         }
 
         Cliente clienteFound = clienteRepository.findById(request.getClienteId())
-                .orElseThrow(() -> new NoSuchElementException("No existe cliente"));
+                .orElseThrow(() -> new ResourceNotFoundException("No existe cliente"));
 
         Venta venta = VentaMapper.toEntity(request);
 
@@ -118,10 +118,10 @@ public class VentaService {
     public VentaResponseDTO updateVenta(Long ventaId, VentaRequestDTO request) {
 
         Venta ventaFound = ventaRepository.findById(ventaId)
-                .orElseThrow(() -> new NoSuchElementException("No existe la venta"));
+                .orElseThrow(() -> new ResourceNotFoundException("No existe la venta"));
 
         Cliente clienteFound = clienteRepository.findById(request.getClienteId())
-                .orElseThrow(() -> new NoSuchElementException("No existe cliente"));
+                .orElseThrow(() -> new ResourceNotFoundException("No existe cliente"));
 
         if (request.getDetalleVenta() == null || request.getDetalleVenta().isEmpty()) {
             throw new IllegalArgumentException("La venta debe tener al menos un detalle");
@@ -148,7 +148,7 @@ public class VentaService {
 
     public VentaResponseDTO getVenta(Long ventaId) {
         Venta ventaFound = ventaRepository.findById(ventaId)
-                .orElseThrow(() -> new NoSuchElementException("No existe la venta"));
+                .orElseThrow(() -> new ResourceNotFoundException("No existe la venta"));
 
         return VentaMapper.toResponseDTO(ventaFound);
     }
@@ -156,7 +156,7 @@ public class VentaService {
     /* Trae ventas de un cliente */
     public List<VentaResponseDTO> getVentasCliente(Long clienteId) {
         Cliente clienteFound = clienteRepository.findById(clienteId)
-                .orElseThrow(() -> new NoSuchElementException("No existe el cliente"));
+                .orElseThrow(() -> new ResourceNotFoundException("No existe el cliente"));
 
         return ventaRepository.findByClienteId(clienteFound.getId()).stream().map(venta -> VentaMapper.toResponseDTO(venta)).collect(Collectors.toList());
 
@@ -179,7 +179,7 @@ public class VentaService {
     public void deleteVenta(Long ventaId) {
 
         Venta ventaFound = ventaRepository.findById(ventaId)
-                .orElseThrow(() -> new NoSuchElementException("No existe la venta"));
+                .orElseThrow(() -> new ResourceNotFoundException("No existe la venta"));
 
         for (DetalleVenta detalle : ventaFound.getDetalleVentas()) {
             Producto producto = detalle.getProducto();

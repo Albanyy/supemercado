@@ -4,8 +4,6 @@ package com.example.supermercado.excepciones;
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.NoSuchElementException;
-
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -24,9 +22,9 @@ import jakarta.validation.ConstraintViolationException;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-        /*el recurso no existe */
-        @ExceptionHandler(NoSuchElementException.class)
-        public ResponseEntity<Map<String, Object>> manejarNoEncontrado(NoSuchElementException ex) {
+        /*Recurso no encotrado */
+        @ExceptionHandler(ResourceNotFoundException.class)
+        public ResponseEntity<Map<String, Object>> manejarNoEncontrado(ResourceNotFoundException ex) {
                 return crearRespuesta(HttpStatus.NOT_FOUND, ex.getMessage());
         }
 
@@ -36,17 +34,17 @@ public class GlobalExceptionHandler {
                 return crearRespuesta(HttpStatus.BAD_REQUEST, ex.getMessage());
         }
 
-        /* eliminacion no permitida por datos relacionados */
-        @ExceptionHandler(IllegalStateException.class)
-        public ResponseEntity<Map<String, Object>> manejarConflicto(IllegalStateException ex) {
+        /* Conflictos de duplicados */
+        @ExceptionHandler({ RelatedResourceException.class, IllegalStateException.class })
+        public ResponseEntity<Map<String, Object>> manejarConflicto(RuntimeException ex) {
                 return crearRespuesta(HttpStatus.CONFLICT, ex.getMessage());
         }
 
-        /* rechaza duplicados */
+        /* base de datos rechaza una operacion por una restriccion como la primary key o foreign key*/
         @ExceptionHandler(DataIntegrityViolationException.class)
         public ResponseEntity<Map<String, Object>> manejarIntegridad(DataIntegrityViolationException ex) {
                 return crearRespuesta(HttpStatus.CONFLICT,
-                                "No se puede completar la operacion porque hay datos relacionados o duplicados");
+                                "No se puede realizar la operacion porque hay datos relacionados o duplicados");
         }
 
         /* falla @Valid en el body */
