@@ -79,6 +79,6 @@ GET http://localhost:8080/api/venta/{id} trae una venta por su id
 
 GET http://localhost:8080/api/venta/cliente/{clienteId} trae ventas de un cliente
 
-GET http://localhost:8080/api/venta/cliente/fecha trae ventas entre dos fechas
+GET http://localhost:8080/api/venta/fecha?inicio=2026-01-01&fin=2026-01-31 trae ventas entre dos fechas es un ejemplo pero se puede con mas fechas
 
 DELETE http://localhost:8080/api/venta/{id} elimina a una venta por su d
