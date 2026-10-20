@@ -1,6 +1,7 @@
 package com.example.supermercado.service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 import java.util.Optional;
@@ -9,8 +10,6 @@ import org.springframework.stereotype.Service;
 import com.example.supermercado.dto.Cliente.ClienteRequestDTO;
 import com.example.supermercado.dto.Cliente.ClienteResponseDTO;
 import com.example.supermercado.entity.Cliente;
-import com.example.supermercado.excepciones.DuplicateResourceException;
-import com.example.supermercado.excepciones.ResourceNotFoundException;
 import com.example.supermercado.mapper.ClienteMapper;
 import com.example.supermercado.repository.ClienteRepository;
 
@@ -27,7 +26,7 @@ public class ClienteService {
         Optional<Cliente> clienteFound = clienteRepository.findFirstByDocumento(request.getDocumento());
 
         if (clienteFound.isPresent()) {
-            throw new DuplicateResourceException("Ya existe");
+            throw new IllegalStateException("Ya existe un cliente con ese documento");
         }
 
         Cliente cliente = ClienteMapper.toEntity(request);
@@ -49,11 +48,12 @@ public class ClienteService {
     /*Actualiza cliente */
 
     public ClienteResponseDTO updateCliente(Long id, ClienteRequestDTO request) {
-        Cliente clienteFound = clienteRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("No existe"));
+        Cliente clienteFound = clienteRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("No existe el cliente"));
         Optional<Cliente> clienteDocumento = clienteRepository.findFirstByDocumento(request.getDocumento());
 
         if (clienteDocumento.isPresent() && !clienteDocumento.get().getId().equals(id)) {
-            throw new DuplicateResourceException("El documento ya existe");
+            throw new IllegalStateException("El documento ya existe");
         }
 
         clienteFound.setNombre(request.getNombre());
@@ -68,7 +68,8 @@ public class ClienteService {
     /*Trae un cliente */
 
     public ClienteResponseDTO getCliente(Long id) {
-        Cliente clienteFound = clienteRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("No existe"));
+        Cliente clienteFound = clienteRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("No existe el cliente"));
 
         return ClienteMapper.toResponseDTO(clienteFound);
     }
@@ -77,7 +78,7 @@ public class ClienteService {
 
     public void deleteCliente(Long id) {
         if (!clienteRepository.existsById(id)) {
-            throw new ResourceNotFoundException("No existe");
+            throw new NoSuchElementException("No existe el cliente");
         }
 
         clienteRepository.deleteById(id);

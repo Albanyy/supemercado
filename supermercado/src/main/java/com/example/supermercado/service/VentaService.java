@@ -3,6 +3,7 @@ package com.example.supermercado.service;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -14,7 +15,6 @@ import com.example.supermercado.entity.Cliente;
 import com.example.supermercado.entity.DetalleVenta;
 import com.example.supermercado.entity.Producto;
 import com.example.supermercado.entity.Venta;
-import com.example.supermercado.excepciones.ResourceNotFoundException;
 import com.example.supermercado.mapper.DetalleVentaMapper;
 import com.example.supermercado.mapper.VentaMapper;
 import com.example.supermercado.repository.ClienteRepository;
@@ -42,14 +42,14 @@ public class VentaService {
         for (DetalleVentaRequestDTO detalleRequest : request) {
 
             if (detalleRequest.getCantidad() == null || detalleRequest.getCantidad() <= 0) {
-                throw new RuntimeException("La cantidad debe ser mayor que cero");
+                throw new IllegalArgumentException("La cantidad debe ser mayor que cero");
             }
 
             Producto productoFound = productoRepository.findById(detalleRequest.getProductoId())
-                    .orElseThrow(() -> new ResourceNotFoundException("No existe el producto"));
+                    .orElseThrow(() -> new NoSuchElementException("No existe el producto"));
 
             if (productoFound.getStock() < detalleRequest.getCantidad()) {
-                throw new RuntimeException("No hay suficiente stock");
+                throw new IllegalArgumentException("No hay suficiente stock");
             }
 
             productoFound.setStock(productoFound.getStock() - detalleRequest.getCantidad());
@@ -82,11 +82,11 @@ public class VentaService {
     public VentaResponseDTO crearVenta(VentaRequestDTO request) {
 
         if (request.getDetalleVenta() == null || request.getDetalleVenta().isEmpty()) {
-            throw new RuntimeException("La venta debe tener al menos un detalle");
+            throw new IllegalArgumentException("La venta debe tener al menos un detalle");
         }
 
         Cliente clienteFound = clienteRepository.findById(request.getClienteId())
-                .orElseThrow(() -> new ResourceNotFoundException("No existe cliente"));
+                .orElseThrow(() -> new NoSuchElementException("No existe cliente"));
 
         Venta venta = VentaMapper.toEntity(request);
 
@@ -116,10 +116,14 @@ public class VentaService {
     public VentaResponseDTO updateVenta(Long ventaId, VentaRequestDTO request) {
 
         Venta ventaFound = ventaRepository.findById(ventaId)
-                .orElseThrow(() -> new ResourceNotFoundException("No existe"));
+                .orElseThrow(() -> new NoSuchElementException("No existe la venta"));
 
         Cliente clienteFound = clienteRepository.findById(request.getClienteId())
-                .orElseThrow(() -> new ResourceNotFoundException("No existe cliente"));
+                .orElseThrow(() -> new NoSuchElementException("No existe cliente"));
+
+        if (request.getDetalleVenta() == null || request.getDetalleVenta().isEmpty()) {
+            throw new IllegalArgumentException("La venta debe tener al menos un detalle");
+        }
 
         for (DetalleVenta detalleAnterior : ventaFound.getDetalleVentas()) {
             Producto productoAnterior = detalleAnterior.getProducto();
@@ -141,7 +145,7 @@ public class VentaService {
 
     public VentaResponseDTO getVenta(Long ventaId) {
         Venta ventaFound = ventaRepository.findById(ventaId)
-                .orElseThrow(() -> new ResourceNotFoundException("No existe"));
+                .orElseThrow(() -> new NoSuchElementException("No existe la venta"));
 
         return VentaMapper.toResponseDTO(ventaFound);
     }
@@ -152,7 +156,7 @@ public class VentaService {
     public void deleteVenta(Long ventaId) {
 
         Venta ventaFound = ventaRepository.findById(ventaId)
-                .orElseThrow(() -> new ResourceNotFoundException("No existe"));
+                .orElseThrow(() -> new NoSuchElementException("No existe la venta"));
 
         for (DetalleVenta detalle : ventaFound.getDetalleVentas()) {
             Producto producto = detalle.getProducto();

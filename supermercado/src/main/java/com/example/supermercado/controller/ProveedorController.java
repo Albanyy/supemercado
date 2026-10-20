@@ -58,7 +58,7 @@ public class ProveedorController {
     @DeleteMapping ("/{id}")
     public ResponseEntity<String> deleteProveedor(@PathVariable("id")  Long proveedorId){
         proveedorService.deleteProveedor(proveedorId);
-        return ResponseEntity.ok("Se elimino correctamente");
+        return ResponseEntity.noContent().build();
     }
 
 }

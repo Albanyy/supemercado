@@ -3,6 +3,7 @@ package com.example.supermercado.service;
 import com.example.supermercado.repository.CategoriaRepository;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -13,8 +14,6 @@ import com.example.supermercado.dto.Producto.ProductoResponseDTO;
 import com.example.supermercado.entity.Categoria;
 import com.example.supermercado.entity.Producto;
 import com.example.supermercado.entity.Proveedor;
-import com.example.supermercado.excepciones.DuplicateResourceException;
-import com.example.supermercado.excepciones.ResourceNotFoundException;
 import com.example.supermercado.mapper.ProductoMapper;
 import com.example.supermercado.repository.ProductoRepository;
 import com.example.supermercado.repository.ProveedorRepository;
@@ -35,15 +34,15 @@ public class ProductoService {
         Optional<Producto> productoFound = productoRepository.findFirstByCodigoBarras(request.getCodigoBarras());
 
         if (productoFound.isPresent()) {
-            throw new DuplicateResourceException(
+            throw new IllegalStateException(
                     "Ya existe un producto con ese código de barras");
         }
 
         Categoria categoriaFound = categoriaRepository.findById(request.getCategoriaId())
-                .orElseThrow(() -> new ResourceNotFoundException("No existe la categoria"));
+                .orElseThrow(() -> new NoSuchElementException("No existe la categoría"));
 
         Proveedor proveedorFound = proveedorRepository.findById(request.getProveedorId())
-                .orElseThrow(() -> new ResourceNotFoundException("No existe este proveedor"));
+                .orElseThrow(() -> new NoSuchElementException("No existe este proveedor"));
 
         Producto producto = ProductoMapper.toEntity(request);
 
@@ -72,18 +71,18 @@ public class ProductoService {
         Optional<Producto> codigoFound = productoRepository.findFirstByCodigoBarras(request.getCodigoBarras());
 
         if (codigoFound.isPresent()&& !codigoFound.get().getId().equals(productoId)) {
-            throw new DuplicateResourceException(
+            throw new IllegalStateException(
                     "Ya existe un producto con ese código de barras");
         }
 
         Producto productoFound = productoRepository.findById(productoId)
-                .orElseThrow(() -> new ResourceNotFoundException("No existe"));
+                .orElseThrow(() -> new NoSuchElementException("No existe el producto"));
 
         Categoria categoriaFound = categoriaRepository.findById(request.getCategoriaId())
-                .orElseThrow(() -> new ResourceNotFoundException("No existe la categoria"));
+                .orElseThrow(() -> new NoSuchElementException("No existe la categoría"));
 
         Proveedor proveedorFound = proveedorRepository.findById(request.getProveedorId())
-                .orElseThrow(() -> new ResourceNotFoundException("No existe este proveedor"));
+                .orElseThrow(() -> new NoSuchElementException("No existe este proveedor"));
 
         productoFound.setNombre(request.getNombre());
         productoFound.setPrecio(request.getPrecio());
@@ -101,7 +100,7 @@ public class ProductoService {
 
     public ProductoResponseDTO getProducto(Long productoId) {
         Producto productoFound = productoRepository.findById(productoId)
-                .orElseThrow(() -> new ResourceNotFoundException("No existe"));
+                .orElseThrow(() -> new NoSuchElementException("No existe el producto"));
 
         return ProductoMapper.toResponseDTO(productoFound);
     }
@@ -110,7 +109,7 @@ public class ProductoService {
 
     public List<ProductoResponseDTO> getProductoCategoria(Long categoriaId) {
         if (!categoriaRepository.existsById(categoriaId)) {
-            throw new ResourceNotFoundException("No existe categoria");
+            throw new NoSuchElementException("No existe la categoría");
         }
 
         return productoRepository.findByCategoriaId(categoriaId).stream()
@@ -137,7 +136,7 @@ public class ProductoService {
 
     public void deleteProducto(Long productoId) {
         if (!productoRepository.existsById(productoId)) {
-            throw new ResourceNotFoundException("No existe");
+            throw new NoSuchElementException("No existe el producto");
         }
 
         productoRepository.deleteById(productoId);
