@@ -45,6 +45,15 @@ public class ClienteService {
 
     }
 
+    /*Trae un cliente por documento */
+
+    public ClienteResponseDTO getClienteDocumento(String documento) {
+        Cliente clienteFound = clienteRepository.findFirstByDocumento(documento)
+                .orElseThrow(() -> new NoSuchElementException("No existe el cliente"));
+
+        return ClienteMapper.toResponseDTO(clienteFound);
+    }
+
     /*Actualiza cliente */
 
     public ClienteResponseDTO updateCliente(Long id, ClienteRequestDTO request) {

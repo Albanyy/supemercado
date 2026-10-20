@@ -42,7 +42,7 @@ public class ProveedorController {
 
     /*Actualiza a proveedor */
     @PutMapping("/{id}")
-    public ResponseEntity<ProveedorResponseDTO> updateProveedor(@PathVariable("id") Long proveedorId, @RequestBody ProveedorRequestDTO request){
+    public ResponseEntity<ProveedorResponseDTO> updateProveedor(@PathVariable("id") Long proveedorId, @Valid @RequestBody ProveedorRequestDTO request){
         ProveedorResponseDTO response = proveedorService.updateProveedor(proveedorId, request);
         return ResponseEntity.ok(response);
     }

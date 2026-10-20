@@ -84,7 +84,7 @@ public class ProveedorService {
             throw new NoSuchElementException("No existe proveedor");
         }
 
-        if (productoRepository.existsById(proveedorId)) {
+        if (productoRepository.existsByProveedorId(proveedorId)) {
             throw new IllegalStateException("No se puede eliminar el proveedor porque tiene productos relacionados ");
         }
 

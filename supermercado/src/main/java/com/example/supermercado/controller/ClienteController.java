@@ -48,7 +48,7 @@ public class ClienteController {
     /*Actualiza un cliente */
 
     @PutMapping ("/{id}")
-    public ResponseEntity<ClienteResponseDTO> updateCliente(@PathVariable ("id") Long clienteId,@RequestBody ClienteRequestDTO request) {
+    public ResponseEntity<ClienteResponseDTO> updateCliente(@PathVariable ("id") Long clienteId,@Valid @RequestBody ClienteRequestDTO request) {
         ClienteResponseDTO response = clienteService.updateCliente(clienteId, request);
         return ResponseEntity.ok(response);
     }
@@ -58,6 +58,13 @@ public class ClienteController {
     @GetMapping ("/{id}")
     public ResponseEntity<ClienteResponseDTO> getCliente(@PathVariable ("id") Long clienteId) {
         ClienteResponseDTO response = clienteService.getCliente(clienteId);
+        return ResponseEntity.ok(response);
+    }
+
+    /*Trae un cliente por documento */
+    @GetMapping ("/documento/{documento}")
+    public ResponseEntity<ClienteResponseDTO> getClienteDocumento(@PathVariable ("documento") String documento) {
+        ClienteResponseDTO response = clienteService.getClienteDocumento(documento);
         return ResponseEntity.ok(response);
     }
 

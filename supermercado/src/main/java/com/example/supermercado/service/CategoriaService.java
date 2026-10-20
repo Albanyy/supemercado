@@ -76,7 +76,7 @@ public class CategoriaService {
             throw new NoSuchElementException("No existe la categoría");
         }
 
-        if (productoRepository.existsById(categoriaId)) {
+        if (productoRepository.existsByCategoriaId(categoriaId)) {
             throw new IllegalStateException("No se puede eliminar la categoría porque tiene productos relacionados");
         }
 

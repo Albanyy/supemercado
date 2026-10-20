@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 import org.springframework.stereotype.Service;
 
@@ -132,7 +134,8 @@ public class VentaService {
 
         ventaFound.getDetalleVentas().clear();
 
-        BigDecimal total = creaDetallesYCalcularTotal(ventaFound, request.getDetalleVenta(),ventaFound.getDetalleVentas());
+        BigDecimal total = creaDetallesYCalcularTotal(ventaFound, request.getDetalleVenta(),
+                ventaFound.getDetalleVentas());
 
         ventaFound.setCliente(clienteFound);
         ventaFound.setTotal(total);
@@ -148,6 +151,26 @@ public class VentaService {
                 .orElseThrow(() -> new NoSuchElementException("No existe la venta"));
 
         return VentaMapper.toResponseDTO(ventaFound);
+    }
+
+    /* Trae ventas de un cliente */
+    public List<VentaResponseDTO> getVentasCliente(Long clienteId) {
+        Cliente clienteFound = clienteRepository.findById(clienteId)
+                .orElseThrow(() -> new NoSuchElementException("No existe el cliente"));
+
+        return ventaRepository.findByClienteId(clienteFound.getId()).stream().map(venta -> VentaMapper.toResponseDTO(venta)).collect(Collectors.toList());
+
+    }
+
+    /* Trae venta entre dos fechas */
+    public List<VentaResponseDTO> getVentasEntreFechas(LocalDate fechaInicio, LocalDate fechaFin) {
+        if (fechaInicio.isAfter(fechaFin)) {
+            throw new IllegalArgumentException("La fecha de inicio no puede ser posterior a la fecha de fin");
+        }
+
+        return ventaRepository.findByFechaVentaBetween(fechaInicio.atStartOfDay(), fechaFin.atTime(LocalTime.MAX))
+                .stream().map(venta -> VentaMapper.toResponseDTO(venta)).collect(Collectors.toList());
+
     }
 
     /* Elimina una venta */
