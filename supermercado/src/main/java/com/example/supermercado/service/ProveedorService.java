@@ -20,7 +20,6 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-@RequestMapping("/api/proveedor")
 public class ProveedorService {
 
     private final ProveedorRepository proveedorRepository;
@@ -34,7 +33,6 @@ public class ProveedorService {
         if (proveedorFound.isPresent()) {
             throw new IllegalStateException("Ya existe un proveedor con ese nombre");
         }
-
         Proveedor proveedor = ProveedorMapper.toEntity(request);
 
         Proveedor proveedorGuardado = proveedorRepository.save(proveedor);
