@@ -2,7 +2,6 @@ package com.example.supermercado.service;
 
 import lombok.RequiredArgsConstructor;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -25,10 +24,9 @@ public class CategoriaService {
 
     /* Crea categoria */
     public CategoriaResponseDTO crearCategoria(CategoriaRequestDTO request) {
-        Optional<Categoria> categoriaFound = categoriaRepository.findFirstByNombre(request.getNombre());
 
-        if (categoriaFound.isPresent()) {
-            throw new IllegalStateException("Ya existe una categoría con ese nombre");
+        if (categoriaRepository.existsByNombre(request.getNombre())) {
+            throw new RelatedResourceException("Ya existe una categoría con ese nombre");
         }
 
         Categoria categoria = CategoriaMapper.toEntity(request);
@@ -43,7 +41,7 @@ public class CategoriaService {
 
     public List<CategoriaResponseDTO> getAllCategorias() {
 
-        return categoriaRepository.findAll().stream().map(categoria -> CategoriaMapper.toResponseDTO(categoria))
+        return categoriaRepository.findAll().stream().map(CategoriaMapper::toResponseDTO)
                 .collect(Collectors.toList());
     }
 
@@ -52,6 +50,10 @@ public class CategoriaService {
     public CategoriaResponseDTO updateCategoria(Long id, CategoriaRequestDTO request) {
         Categoria categoriaFound = categoriaRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("No existe la categoría"));
+
+        if (categoriaRepository.existsByNombreAndIdNot(request.getNombre(), id)) {
+            throw new RelatedResourceException("Ya existe una categoría con ese nombre");
+        }
 
         categoriaFound.setNombre(request.getNombre());
         categoriaFound.setDescripcion(request.getDescripcion());

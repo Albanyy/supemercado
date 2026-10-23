@@ -1,11 +1,9 @@
 package com.example.supermercado.service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.example.supermercado.dto.Proveedor.ProveedorRequestDTO;
 import com.example.supermercado.dto.Proveedor.ProveedorResponseDTO;
@@ -28,11 +26,11 @@ public class ProveedorService {
     /* Crea un Proveedor */
 
     public ProveedorResponseDTO crearProveedor(ProveedorRequestDTO request) {
-        Optional<Proveedor> proveedorFound = proveedorRepository.findFirstByNombre(request.getNombre());
-
-        if (proveedorFound.isPresent()) {
-            throw new IllegalStateException("Ya existe un proveedor con ese nombre");
+        
+        if (proveedorRepository.existsByNombre(request.getNombre())) {
+            throw new RelatedResourceException("Ya existe un proveedor con el mismo nombre");
         }
+
         Proveedor proveedor = ProveedorMapper.toEntity(request);
 
         Proveedor proveedorGuardado = proveedorRepository.save(proveedor);
@@ -45,8 +43,7 @@ public class ProveedorService {
 
     public List<ProveedorResponseDTO> getAllProveedores() {
 
-        return proveedorRepository.findAll().stream().map(proveedor -> ProveedorMapper.toResponseDTO(proveedor))
-                .collect(Collectors.toList());
+        return proveedorRepository.findAll().stream().map(ProveedorMapper::toResponseDTO).collect(Collectors.toList());
 
     }
 
@@ -56,6 +53,10 @@ public class ProveedorService {
 
         Proveedor proveedorFound = proveedorRepository.findById(proveedorId)
                 .orElseThrow(() -> new ResourceNotFoundException("No existe el proveedor"));
+
+        if (proveedorRepository.existByNombreAndIdNot(request.getNombre(), proveedorId)) {
+            throw new RelatedResourceException("Ya existe un proveedor con el mismo nombre");
+        }
 
         proveedorFound.setNombre(request.getNombre());
         proveedorFound.setTelefono(request.getTelefono());

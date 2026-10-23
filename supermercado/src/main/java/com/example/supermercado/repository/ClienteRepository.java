@@ -1,5 +1,6 @@
 package com.example.supermercado.repository;
 
+
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -7,7 +8,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.example.supermercado.entity.Cliente;
 
 public interface ClienteRepository extends JpaRepository<Cliente, Long> {
-    Optional<Cliente> findFirstByNombre(String nombre);  
 
-    Optional<Cliente> findFirstByDocumento(String documento);
+    boolean existsByDocumento(String documento);
+
+    boolean existsByDocumentoAndIdNot(String documento, Long clienteId);
+
+    Optional<Cliente> findByDocumento(String documento);
+
 }

@@ -15,10 +15,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import jakarta.validation.ConstraintViolationException;
 
-
-
-
-
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 

@@ -48,7 +48,7 @@ public class ClienteController {
     /*Actualiza un cliente */
 
     @PutMapping ("/{id}")
-    public ResponseEntity<ClienteResponseDTO> updateCliente(@PathVariable ("id") Long clienteId,@Valid @RequestBody ClienteRequestDTO request) {
+    public ResponseEntity<ClienteResponseDTO> updateCliente(@PathVariable("id") Long clienteId, @Valid @RequestBody ClienteRequestDTO request) {
         ClienteResponseDTO response = clienteService.updateCliente(clienteId, request);
         return ResponseEntity.ok(response);
     }
@@ -56,7 +56,7 @@ public class ClienteController {
     /*Trae un cliente */
 
     @GetMapping ("/{id}")
-    public ResponseEntity<ClienteResponseDTO> getCliente(@PathVariable ("id") Long clienteId) {
+    public ResponseEntity<ClienteResponseDTO> getCliente(@PathVariable("id") Long clienteId) {
         ClienteResponseDTO response = clienteService.getCliente(clienteId);
         return ResponseEntity.ok(response);
     }
@@ -71,7 +71,7 @@ public class ClienteController {
     /*Elimina un cliente */
 
     @DeleteMapping ("/{id}")
-    public ResponseEntity<String> deleteCliente(@PathVariable ("id") Long clienteId){
+    public ResponseEntity<Void> deleteCliente(@PathVariable("id") Long clienteId){
         clienteService.deleteCliente(clienteId);
         return ResponseEntity.noContent().build();
     }

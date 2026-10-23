@@ -3,7 +3,6 @@ package com.example.supermercado.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import com.example.supermercado.dto.Cliente.ClienteRequestDTO;
@@ -23,9 +22,8 @@ public class ClienteService {
     /*Crea cliente */
 
     public ClienteResponseDTO crearCliente(ClienteRequestDTO request){
-        Optional<Cliente> clienteFound = clienteRepository.findFirstByDocumento(request.getDocumento());
-
-        if (clienteFound.isPresent()) {
+        
+        if (clienteRepository.existsByDocumento(request.getDocumento())) {
             throw new IllegalStateException("Ya existe un cliente con ese documento");
         }
 
@@ -41,14 +39,14 @@ public class ClienteService {
 
     public List<ClienteResponseDTO> getAllClientes() {
 
-        return clienteRepository.findAll().stream().map(cliente -> ClienteMapper.toResponseDTO(cliente)).collect(Collectors.toList());
+        return clienteRepository.findAll().stream().map(ClienteMapper::toResponseDTO).collect(Collectors.toList());
 
     }
 
     /*Trae un cliente por documento */
 
     public ClienteResponseDTO getClienteDocumento(String documento) {
-        Cliente clienteFound = clienteRepository.findFirstByDocumento(documento)
+        Cliente clienteFound = clienteRepository.findByDocumento(documento)
                 .orElseThrow(() -> new ResourceNotFoundException("No existe el cliente"));
 
         return ClienteMapper.toResponseDTO(clienteFound);
@@ -57,13 +55,14 @@ public class ClienteService {
     /*Actualiza cliente */
 
     public ClienteResponseDTO updateCliente(Long id, ClienteRequestDTO request) {
+
         Cliente clienteFound = clienteRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("No existe el cliente"));
-        Optional<Cliente> clienteDocumento = clienteRepository.findFirstByDocumento(request.getDocumento());
 
-        if (clienteDocumento.isPresent() && !clienteDocumento.get().getId().equals(id)) {
-            throw new IllegalStateException("El documento ya existe");
+        if (clienteRepository.existsByDocumentoAndIdNot(request.getDocumento(), id)) {
+            throw new IllegalStateException("Ya existe un cliente con ese documento");
         }
+
 
         clienteFound.setNombre(request.getNombre());
         clienteFound.setDocumento(request.getDocumento());
