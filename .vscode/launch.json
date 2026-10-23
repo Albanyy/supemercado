@@ -4,11 +4,10 @@
             "type": "java",
             "name": "Spring Boot-SupermercadoApplication<supermercado>",
             "request": "launch",
-            "cwd": "${workspaceFolder}",
+            "cwd": "${workspaceFolder}/supermercado",
             "mainClass": "com.example.supermercado.SupermercadoApplication",
             "projectName": "supermercado",
-            "args": "",
-            "envFile": "${workspaceFolder}/.env"
+            "args": ""
         }
     ]
 }
