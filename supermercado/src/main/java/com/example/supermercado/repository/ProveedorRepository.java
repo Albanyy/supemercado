@@ -8,6 +8,7 @@ public interface ProveedorRepository extends JpaRepository<Proveedor, Long> {
     
     boolean existsByNombre(String nombre);
 
-    boolean existByNombreAndIdNot(String nombre, Long proveedorId);
+    boolean existsByNombreAndIdNot(String nombre, Long proveedorId);
+
 
 }

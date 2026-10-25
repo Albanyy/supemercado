@@ -2,8 +2,6 @@ package com.example.supermercado.dto.DetalleVenta;
 
 import java.math.BigDecimal;
 
-import com.example.supermercado.entity.Producto;
-import com.example.supermercado.entity.Venta;
 
 import lombok.Data;
 

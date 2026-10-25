@@ -2,7 +2,10 @@ package com.example.supermercado.service;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -14,8 +17,8 @@ import com.example.supermercado.dto.Venta.VentaRequestDTO;
 import com.example.supermercado.dto.Venta.VentaResponseDTO;
 import com.example.supermercado.entity.Cliente;
 import com.example.supermercado.entity.DetalleVenta;
-import com.example.supermercado.entity.Producto; 
-import com.example.supermercado.entity.Venta; 
+import com.example.supermercado.entity.Producto;
+import com.example.supermercado.entity.Venta;
 import com.example.supermercado.excepciones.ResourceNotFoundException;
 import com.example.supermercado.mapper.DetalleVentaMapper;
 import com.example.supermercado.mapper.VentaMapper;
@@ -33,6 +36,18 @@ public class VentaService {
     private final ClienteRepository clienteRepository;
     private final ProductoRepository productoRepository;
     private final VentaRepository ventaRepository;
+
+    /* Bloquea los productos en orden de id para evitar deadlocks */
+    private void bloquearProductos(Set<Long> productosIds) {
+
+        List<Long> idsOrdenados = new ArrayList<>(productosIds);
+        Collections.sort(idsOrdenados);
+
+        for (Long productoId : idsOrdenados) {
+            productoRepository.findByIdForUpdate(productoId)
+                    .orElseThrow(() -> new ResourceNotFoundException("No existe el producto"));
+        }
+    }
 
     /* Crea a detalleVenta y calcula el total */
 
@@ -92,8 +107,17 @@ public class VentaService {
 
         Venta venta = VentaMapper.toEntity(request);
 
+        Set<Long> productosIds = new HashSet<>();
+
+        for (DetalleVentaRequestDTO detalle : request.getDetalleVenta()) {
+            productosIds.add(detalle.getProductoId());
+        }
+
+        bloquearProductos(productosIds);
+
         List<DetalleVenta> detalleVenta = new ArrayList<>();
-        BigDecimal total = creaDetallesYCalcularTotal(venta, request.getDetalleVenta(), detalleVenta);
+        BigDecimal total = creaDetallesYCalcularTotal(
+                venta, request.getDetalleVenta(), detalleVenta);
 
         venta.setCliente(clienteFound);
         venta.setDetalleVentas(detalleVenta);
@@ -107,9 +131,16 @@ public class VentaService {
 
     public List<VentaResponseDTO> getAllVentas() {
 
-        return ventaRepository.findAll().stream().map(venta -> VentaMapper.toResponseDTO(venta))
-                .collect(Collectors.toList());
+        return ventaRepository.findAll().stream().map(VentaMapper::toResponseDTO).collect(Collectors.toList());
 
+    }
+
+    /* Trae una venta por id */
+
+    public VentaResponseDTO getVenta(Long ventaId) {
+        Venta venta = ventaRepository.findById(ventaId)
+                .orElseThrow(() -> new ResourceNotFoundException("No existe la venta"));
+        return VentaMapper.toResponseDTO(venta);
     }
 
     /* Actualiza venta */
@@ -126,6 +157,19 @@ public class VentaService {
         if (request.getDetalleVenta() == null || request.getDetalleVenta().isEmpty()) {
             throw new IllegalArgumentException("La venta debe tener al menos un detalle");
         }
+
+        /* Junta los ids de los productos viejos y los nuevos */
+        Set<Long> productosIds = new HashSet<>();
+
+        for (DetalleVenta detalleAnterior : ventaFound.getDetalleVentas()) {
+            productosIds.add(detalleAnterior.getProducto().getId());
+        }
+
+        for (DetalleVentaRequestDTO detalleNuevo : request.getDetalleVenta()) {
+            productosIds.add(detalleNuevo.getProductoId());
+        }
+
+        bloquearProductos(productosIds);
 
         for (DetalleVenta detalleAnterior : ventaFound.getDetalleVentas()) {
             Producto productoAnterior = detalleAnterior.getProducto();
@@ -144,24 +188,6 @@ public class VentaService {
         return VentaMapper.toResponseDTO(ventaActualizada);
     }
 
-    /* Trae una venta por id */
-
-    public VentaResponseDTO getVenta(Long ventaId) {
-        Venta ventaFound = ventaRepository.findById(ventaId)
-                .orElseThrow(() -> new ResourceNotFoundException("No existe la venta"));
-
-        return VentaMapper.toResponseDTO(ventaFound);
-    }
-
-    /* Trae ventas de un cliente */
-    public List<VentaResponseDTO> getVentasCliente(Long clienteId) {
-        Cliente clienteFound = clienteRepository.findById(clienteId)
-                .orElseThrow(() -> new ResourceNotFoundException("No existe el cliente"));
-
-        return ventaRepository.findByClienteId(clienteFound.getId()).stream().map(venta -> VentaMapper.toResponseDTO(venta)).collect(Collectors.toList());
-
-    }
-
     /* Trae venta entre dos fechas */
     public List<VentaResponseDTO> getVentasEntreFechas(LocalDate fechaInicio, LocalDate fechaFin) {
         if (fechaInicio.isAfter(fechaFin)) {
@@ -169,8 +195,20 @@ public class VentaService {
         }
 
         return ventaRepository.findByFechaVentaBetween(fechaInicio.atStartOfDay(), fechaFin.atTime(LocalTime.MAX))
-                .stream().map(venta -> VentaMapper.toResponseDTO(venta)).collect(Collectors.toList());
+                .stream().map(VentaMapper::toResponseDTO).collect(Collectors.toList());
 
+    }
+
+    /* Trae las ventas de un cliente */
+
+    public List<VentaResponseDTO> getVentasCliente(Long clienteId) {
+
+        if (!clienteRepository.existsById(clienteId)) {
+            throw new ResourceNotFoundException("No existe cliente");
+        }
+
+        return ventaRepository.findByClienteId(clienteId).stream().map(VentaMapper::toResponseDTO)
+                .collect(Collectors.toList());
     }
 
     /* Elimina una venta */
@@ -180,6 +218,14 @@ public class VentaService {
 
         Venta ventaFound = ventaRepository.findById(ventaId)
                 .orElseThrow(() -> new ResourceNotFoundException("No existe la venta"));
+
+        Set<Long> productosIds = new HashSet<>();
+
+        for (DetalleVenta detalle : ventaFound.getDetalleVentas()) {
+            productosIds.add(detalle.getProducto().getId());
+        }
+
+        bloquearProductos(productosIds);
 
         for (DetalleVenta detalle : ventaFound.getDetalleVentas()) {
             Producto producto = detalle.getProducto();

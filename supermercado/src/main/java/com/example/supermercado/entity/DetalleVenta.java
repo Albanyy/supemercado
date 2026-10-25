@@ -27,21 +27,21 @@ public class DetalleVenta {
     @Column (name = "id")
     private Long id;
 
-    @Column (name = "cantidad")
+    @Column (name = "cantidad", nullable = false)
     private Integer cantidad;
 
-    @Column (name = "precio_unitario")
+    @Column (name = "precio_unitario", nullable = false, precision = 12, scale = 2)
     private BigDecimal precioUnitario;
 
-    @Column (name = "sub_total")
+    @Column (name = "sub_total" , nullable = false, precision = 12, scale = 2)
     private  BigDecimal subTotal;
 
-    @ManyToOne 
-    @JoinColumn (name = "venta_id")
+    @ManyToOne(optional = false)
+    @JoinColumn (name = "venta_id", nullable = false)
     private Venta venta;
 
-    @ManyToOne 
-    @JoinColumn (name = "producto_id")
+    @ManyToOne (optional = false)
+    @JoinColumn (name = "producto_id", nullable = false)
     private Producto producto;
 
 

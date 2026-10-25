@@ -3,7 +3,6 @@ package com.example.supermercado.service;
 import com.example.supermercado.repository.CategoriaRepository;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -31,11 +30,8 @@ public class ProductoService {
     /* Crea un producto */
     public ProductoResponseDTO crearProducto(ProductoRequestDTO request) {
 
-        Optional<Producto> productoFound = productoRepository.findFirstByCodigoBarras(request.getCodigoBarras());
-
-        if (productoFound.isPresent()) {
-            throw new IllegalStateException(
-                    "Ya existe un producto con ese código de barras");
+        if (productoRepository.existsByCodigoBarras(request.getCodigoBarras())) {
+            throw new IllegalStateException("Ya existe un producto con ese código de barras");
         }
 
         Categoria categoriaFound = categoriaRepository.findById(request.getCategoriaId())
@@ -59,8 +55,7 @@ public class ProductoService {
 
     public List<ProductoResponseDTO> getAllProductos() {
 
-        return productoRepository.findAll().stream().map(producto -> ProductoMapper.toResponseDTO(producto))
-                .collect(Collectors.toList());
+        return productoRepository.findAll().stream().map(ProductoMapper::toResponseDTO).collect(Collectors.toList());
 
     }
 
@@ -68,15 +63,14 @@ public class ProductoService {
 
     public ProductoResponseDTO updateProducto(Long productoId, ProductoRequestDTO request) {
 
-        Optional<Producto> codigoFound = productoRepository.findFirstByCodigoBarras(request.getCodigoBarras());
-
-        if (codigoFound.isPresent()&& !codigoFound.get().getId().equals(productoId)) {
-            throw new IllegalStateException(
-                    "Ya existe un producto con ese código de barras");
-        }
-
         Producto productoFound = productoRepository.findById(productoId)
                 .orElseThrow(() -> new ResourceNotFoundException("No existe el producto"));
+
+        if (productoRepository.existsByCodigoBarrasAndIdNot(
+                request.getCodigoBarras(), productoId)) {
+            throw new IllegalStateException(
+                    "Ya existe otro producto con ese código de barras");
+        }
 
         Categoria categoriaFound = categoriaRepository.findById(request.getCategoriaId())
                 .orElseThrow(() -> new ResourceNotFoundException("No existe la categoría"));
@@ -112,8 +106,8 @@ public class ProductoService {
             throw new ResourceNotFoundException("No existe la categoría");
         }
 
-        return productoRepository.findByCategoriaId(categoriaId).stream()
-                .map(producto -> ProductoMapper.toResponseDTO(producto)).collect(Collectors.toList());
+        return productoRepository.findByCategoriaId(categoriaId).stream().map(ProductoMapper::toResponseDTO)
+                .collect(Collectors.toList());
 
     }
 
@@ -121,20 +115,23 @@ public class ProductoService {
 
     public List<ProductoResponseDTO> getProductoNombre(String productoNombre) {
 
-        return productoRepository.findByNombreContainingIgnoreCase(productoNombre).stream().map(producto -> ProductoMapper.toResponseDTO(producto)).collect(Collectors.toList());
+        return productoRepository.findByNombreContainingIgnoreCase(productoNombre).stream()
+                .map(ProductoMapper::toResponseDTO).collect(Collectors.toList());
     }
 
     /* Lista los productos con menor o igual al limite indicado */
 
     public List<ProductoResponseDTO> getProductoStock(Integer stock) {
 
-        return productoRepository.findByStockLessThanEqual(stock).stream().map(producto -> ProductoMapper.toResponseDTO(producto)).collect(Collectors.toList());
+        return productoRepository.findByStockLessThanEqual(stock).stream()
+                .map(ProductoMapper::toResponseDTO).collect(Collectors.toList());
 
     }
 
     /* Eliminar un producto */
 
     public void deleteProducto(Long productoId) {
+
         if (!productoRepository.existsById(productoId)) {
             throw new ResourceNotFoundException("No existe el producto");
         }

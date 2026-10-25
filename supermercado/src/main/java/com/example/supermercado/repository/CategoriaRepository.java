@@ -12,6 +12,5 @@ public interface CategoriaRepository extends JpaRepository<Categoria, Long> {
 
     boolean existsByNombreAndIdNot(String nombre, Long id);
 
-    boolean existsByCategoriaId(Long categoriaId);
 }
 

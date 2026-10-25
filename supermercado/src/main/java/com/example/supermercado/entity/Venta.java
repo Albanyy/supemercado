@@ -33,7 +33,7 @@ public class Venta {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "fecha")
+    @Column(name = "fecha", nullable = false, updatable = false)
     private LocalDateTime fechaVenta;
 
     @PrePersist
@@ -41,11 +41,11 @@ public class Venta {
         this.fechaVenta = LocalDateTime.now();
     }
 
-    @Column(name = "total")
+    @Column(name = "total", nullable = false, precision = 12, scale = 2)
     private BigDecimal total;
 
-    @ManyToOne
-    @JoinColumn(name = "cliente_id")
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "cliente_id", nullable = false)
     private Cliente cliente;
 
     @OneToMany(mappedBy = "venta", cascade = CascadeType.ALL, orphanRemoval = true)

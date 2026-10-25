@@ -75,8 +75,8 @@ public class ProductoController {
 
     /* Trae un producto por el nombre */
 
-    @GetMapping("/nombre/{nombre}")
-    public ResponseEntity<List<ProductoResponseDTO>> getProductoNombre(@PathVariable("nombre") String nombre) {
+    @GetMapping("/nombre")
+    public ResponseEntity<List<ProductoResponseDTO>> getProductoNombre(@RequestParam("nombre") String nombre) {
         List<ProductoResponseDTO> response = productoService.getProductoNombre(nombre);
         return ResponseEntity.ok(response);
     }
@@ -84,7 +84,7 @@ public class ProductoController {
     /* Lista los productos con menor o igual al limite indicado */
 
     @GetMapping("/stock")
-    public ResponseEntity<List<ProductoResponseDTO>> getProductoStock(@RequestParam @Min(value = 0, message = "El límite de stock no puede ser negativo") Integer stock) {
+    public ResponseEntity<List<ProductoResponseDTO>> getProductoStock(@RequestParam("stock") @Min(value = 0, message = "El límite de stock no puede ser negativo") Integer stock) {
         List<ProductoResponseDTO> response = productoService.getProductoStock(stock);
         return ResponseEntity.ok(response);
     }
@@ -92,7 +92,9 @@ public class ProductoController {
     /* Eliminar un producto */
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteProducto(@PathVariable("id") Long productoId) {
+
+    public ResponseEntity<Void> deleteProducto(@PathVariable("id") Long productoId) {
+        
         productoService.deleteProducto(productoId);
         return ResponseEntity.noContent().build();
     }

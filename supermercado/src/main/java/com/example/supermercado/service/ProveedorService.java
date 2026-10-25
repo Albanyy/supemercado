@@ -54,7 +54,7 @@ public class ProveedorService {
         Proveedor proveedorFound = proveedorRepository.findById(proveedorId)
                 .orElseThrow(() -> new ResourceNotFoundException("No existe el proveedor"));
 
-        if (proveedorRepository.existByNombreAndIdNot(request.getNombre(), proveedorId)) {
+        if (proveedorRepository.existsByNombreAndIdNot(request.getNombre(), proveedorId)) {
             throw new RelatedResourceException("Ya existe un proveedor con el mismo nombre");
         }
 
