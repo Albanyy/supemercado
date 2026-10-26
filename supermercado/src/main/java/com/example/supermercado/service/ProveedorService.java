@@ -5,7 +5,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.example.supermercado.dto.Proveedor.ProveedorRequestDTO;
 import com.example.supermercado.dto.Proveedor.ProveedorResponseDTO;

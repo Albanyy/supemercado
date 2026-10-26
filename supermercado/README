@@ -15,7 +15,7 @@ PUT http://localhost:8080/api/cliente/{id} actualiza a un cliente por su id
 
 GET http://localhost:8080/api/cliente/{id} trae a un cliente por su id
 
-GET http://localhost:8080/api/cliente/{documento} trae un cliente por su documento
+GET http://localhost:8080/api/cliente/documento/{documento} trae un cliente por su documento
 
 DELETE http://localhost:8080/api/cliente/{id} elimina un cliente por su id
 

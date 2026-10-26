@@ -4,9 +4,8 @@ import com.example.supermercado.dto.Producto.ProductoRequestDTO;
 import com.example.supermercado.dto.Producto.ProductoResponseDTO;
 import com.example.supermercado.entity.Producto;
 
-import lombok.Data;
 
-@Data 
+
 public class ProductoMapper {
 
     /* Convierte a Producto a ProductoResponseDTO */
